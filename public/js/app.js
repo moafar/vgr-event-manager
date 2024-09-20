@@ -21,29 +21,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Inicializa Firestore
     const db = getFirestore(app);
 
-    // Referencias a los elementos del DOM
-    const dataForm = document.getElementById('dataForm');
-    const dataInput = document.getElementById('dataInput');
+    // Referencias al contenedor de tarjetas
     const cardContainer = document.getElementById('cardContainer');
-
-    // Función para guardar un nuevo evento en Firestore
-    dataForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const inputData = dataInput.value;
-
-        try {
-            await addDoc(collection(db, 'events'), {
-                name: inputData,
-                timestamp: new Date()
-            });
-            console.log("Evento agregado con éxito!");
-            dataInput.value = ''; // Limpia el campo de entrada
-            mostrarEventos();  // Refresca la vista
-        } catch (error) {
-            console.error("Error al agregar el evento: ", error);
-        }
-    });
 
     // Función para mostrar los eventos en formato de tarjetas
     async function mostrarEventos() {
@@ -58,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const eventData = doc.data();
             const card = `
                 <div class="col-md-4">
-                    <div class="card mb-4">
+                    <div class="card mb-4" style="cursor: pointer;" onclick="window.location.href='${eventData.url}'">
                         <div class="card-body">
                             <h5 class="card-title">${eventData.name}</h5>
                             <p class="card-text">Agregado el: ${new Date(eventData.timestamp.seconds * 1000).toLocaleString()}</p>
