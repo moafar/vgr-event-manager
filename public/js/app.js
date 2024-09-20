@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js';
 import { getFirestore, collection, addDoc, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js';
 
-// Configuración de Firebase (usa tu propio código de configuración)
+// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyClmoOpOuPmkYdheJRZPQUZjbP48gkgtlw",
   authDomain: "vgr-event-manager.firebaseapp.com",
@@ -12,46 +12,64 @@ const firebaseConfig = {
   measurementId: "G-WZYGW7PQGH"
 };
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
+// Espera a que el DOM esté completamente cargado antes de ejecutar el código
+document.addEventListener("DOMContentLoaded", function() {
 
-// Inicializar Firestore
-const db = getFirestore(app);
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
 
-// Referencias a los elementos del DOM
-const dataForm = document.getElementById('dataForm');
-const dataInput = document.getElementById('dataInput');
-const outputDiv = document.getElementById('output');
+    // Inicializa Firestore
+    const db = getFirestore(app);
 
-// Función para guardar un nuevo evento en Firestore
-dataForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const inputData = dataInput.value;
+    // Referencias a los elementos del DOM
+    const dataForm = document.getElementById('dataForm');
+    const dataInput = document.getElementById('dataInput');
+    const cardContainer = document.getElementById('cardContainer');
 
-    try {
-        await addDoc(collection(db, 'events'), {
-            name: inputData,
-            timestamp: new Date()
-        });
-        console.log("Evento agregado con éxito!");
-        dataInput.value = ''; // Limpiar el campo de entrada
-        mostrarEventos();
-    } catch (error) {
-        console.error("Error al agregar el evento: ", error);
-    }
-});
+    // Función para guardar un nuevo evento en Firestore
+    dataForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const inputData = dataInput.value;
 
-// Función para mostrar los eventos en la página
-async function mostrarEventos() {
-    const q = query(collection(db, 'events'), orderBy('timestamp', 'desc'));
-    const querySnapshot = await getDocs(q);
-
-    outputDiv.innerHTML = '';
-    querySnapshot.forEach((doc) => {
-        outputDiv.innerHTML += `<p>${doc.data().name}</p>`;
+        try {
+            await addDoc(collection(db, 'events'), {
+                name: inputData,
+                timestamp: new Date()
+            });
+            console.log("Evento agregado con éxito!");
+            dataInput.value = ''; // Limpia el campo de entrada
+            mostrarEventos();  // Refresca la vista
+        } catch (error) {
+            console.error("Error al agregar el evento: ", error);
+        }
     });
-}
 
-// Mostrar los eventos al cargar la página
-mostrarEventos();
+    // Función para mostrar los eventos en formato de tarjetas
+    async function mostrarEventos() {
+        const q = query(collection(db, 'events'), orderBy('timestamp', 'desc'));
+        const querySnapshot = await getDocs(q);
+
+        // Limpia el contenedor de tarjetas
+        cardContainer.innerHTML = '';
+
+        // Recorre los documentos y crea las tarjetas
+        querySnapshot.forEach((doc) => {
+            const eventData = doc.data();
+            const card = `
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">${eventData.name}</h5>
+                            <p class="card-text">Agregado el: ${new Date(eventData.timestamp.seconds * 1000).toLocaleString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            cardContainer.innerHTML += card;
+        });
+    }
+
+    // Mostrar los eventos al cargar la página
+    mostrarEventos();
+});
