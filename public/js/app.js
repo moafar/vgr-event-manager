@@ -38,9 +38,15 @@ document.addEventListener("DOMContentLoaded", function() {
             const card = `
                 <div class="col-md-4">
                     <div class="card mb-4 event-card" style="cursor: pointer;" onclick="window.location.href='${eventData.url}'">
+                        <div class="card-header">
+                            ${eventData.ponente}
+                        </div>
                         <div class="card-body">
                             <h5 class="card-title">${eventData.name}</h5>
-                            <p class="card-text">Agregado el: ${new Date(eventData.timestamp.seconds * 1000).toLocaleString()}</p>
+                            
+                        </div>
+                        <div class="card-footer text-muted">
+                            Agregado el: ${new Date(eventData.timestamp.seconds * 1000).toLocaleString()}
                         </div>
                     </div>
                 </div>
