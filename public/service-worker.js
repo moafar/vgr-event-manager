@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vgr-event-cache-v1';
+const CACHE_NAME = 'vgr-event-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -8,7 +8,8 @@ const urlsToCache = [
   '/assets/images/favicon.ico',
   '/assets/images/icon-192x192.png',
   '/assets/images/icon-512x512.png',
-  '/offline.html'
+  '/offline.html',
+  '/programa_curso_bootstrap.html'
 ];
 
 console.log('Service Worker cargado correctamente');
