@@ -44,10 +44,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="card-body">
                             <h5 class="card-title">${eventData.name}</h5>
                             
-                        </div>
+                        </div> <!--
                         <div class="card-footer text-muted">
                             Agregado el: ${new Date(eventData.timestamp.seconds * 1000).toLocaleString()}
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             `;
