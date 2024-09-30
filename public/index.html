@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VGR Event Manager</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS (CDN oficial Bootstrap 5) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Enlace al manifest.json para PWA -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
 
     <!-- Enlace al favicon -->
     <link rel="icon" href="/assets/images/favicon.ico">
@@ -27,44 +30,130 @@
         background-color: #b2ebf2; 
         cursor: pointer;
     }
+    .menu-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h3 class="text-center">Curso Internacional de Oftalmología Foscal </h3>
-        <h4 class="text-center">Febrero 23 a 28 de 2025</h4>
+    <!-- Contenedor para el navbar -->
+    <div id="navbar-container"></div>
 
-	<!-- Botón para ir al Programa-->
-        <hr />
-        <a href="programa_curso_bootstrap.html" class="btn btn-primary btn-sm">Programa</a>
-        <hr />
-
-
-        <!-- Contenedor para las tarjetas de Bootstrap -->
-        <div id="cardContainer" class="row mt-5">
-            <!-- Las tarjetas de eventos serán inyectadas aquí -->
+    <!-- Header Section -->
+    <header class="py-5">
+        <div class="container">
+            <div class="p-4 p-lg-5 bg-light rounded-3 text-center">
+                <h1 class="display-7 fw-bold">XVIII Curso Internacional de Oftalmología Foscal</h1>
+                <p class="fs-4">Febrero 17 al 28 de 2025</p>
+                <!-- <a class="btn btn-primary btn-lg" href="#!">Get Started</a> -->
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Bootstrap JS, Popper.js, and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Page Content -->
+    <section class="pt-0" style="margin-top: -60px;">
+        <div class="container-sm px-5">
+            <div class="row">
+              <!-- First Card -->
+                <div class="col-lg-6 mb-4">
+                    <a href="programa.html" class="text-decoration-none">
+                        <div class="card text-white border-0 h-100" style="background-color: #56a0dd;">
+                            <div class="card-body text-center">
+                                <div class="feature bg-gradient text-white rounded-3 mb-4">
+                                  <i class="bi bi-calendar4-week" style="font-size: 2rem;"></i>
+                                </div>
+                                <h2 class="fs-4 fw-bold">Programa</h2>
+                                <p class="mb-0">Agenda de los eventos académicos.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
 
-    <!-- Script de Firebase y lógica de la app -->
-    <script type="module" src="assets/js/app.js"></script>
+                <!-- Second Card -->
+                <div class="col-lg-6 mb-4">
+                    <a href="user-management.html" class="text-decoration-none">
+                         <div class="card text-white border-0 h-100" style="background-color: #56a0dd;">
+                            <div class="card-body text-center">
+                                <div class="feature bg-gradient text-white rounded-3 mb-4">
+                                    <i class="bi bi-people" style="font-size: 2rem;"></i>
+                                </div>
+                                <h2 class="fs-4 fw-bold">Directorio</h2>
+                                <p class="mb-0">Conoce a los participantes</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Third Card -->
+                <div class="col-lg-6 mb-4">
+                    <a href="repositorio.html" class="text-decoration-none">
+                        <div class="card text-white border-0 h-100" style="background-color: #56a0dd;">
+                            <div class="card-body text-center">
+                                <div class="feature bg-gradient text-white rounded-3 mb-4">
+                                    <i class="bi bi-folder" style="font-size: 2rem;"></i>
+                                </div>
+                                <h2 class="fs-4 fw-bold">Repositorio</h2>
+                                <p class="mb-0">Memorias y documentos</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Fourth Card -->
+                <div class="col-lg-6 mb-4">
+                    <a href="user-management.html" class="text-decoration-none">
+                        <div class="card text-white border-0 h-100" style="background-color: #56a0dd;">
+                            <div class="card-body text-center">
+                                <div class="feature bg-gradient text-white rounded-3 mb-4">
+                                    <i class="bi bi-camera" style="font-size: 2rem;"></i>
+                                </div>
+                                <h2 class="fs-4 fw-bold">Galería</h2>
+                                <p class="mb-0">Fotos y videos oficiales del curso</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contenedor para el footer -->
+    <div id="footer-container"></div>
+
+    <!-- Cargar archivos JavaScript -->
+    <script src="assets/js/loadComponent.js">
+    </script>
+
+    <script>
+        loadComponent("navbar-container", "navbar.html");
+        loadComponent("footer-container", "footer.html");
+    </script>
+
+    <!-- Bootstrap core JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script> 
 
     <!-- Registro del service worker para PWA -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-            console.log('ServiceWorker registrado con éxito: ', registration.scope);
-          }, function(err) {
-            console.log('Error al registrar el ServiceWorker: ', err);
-          });
+        if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+            registration.onupdatefound = () => {
+            const installingWorker = registration.installing;
+            installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                    // Una nueva versión del service worker está disponible, forzar la recarga
+                    window.location.reload();
+                }
+                }
+            };
+            };
+        }).catch((error) => {
+            console.error('Error al registrar el Service Worker:', error);
         });
-      }
+        }
     </script>
 </body>
 </html>

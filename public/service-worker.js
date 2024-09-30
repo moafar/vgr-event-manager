@@ -3,13 +3,12 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  //'/assets/css/styles.css',
-  '/assets/js/app.js',
+  '/assets/css/styles.css',
   '/assets/images/favicon.ico',
   '/assets/images/icon-192x192.png',
   '/assets/images/icon-512x512.png',
   '/offline.html',
-  '/programa_curso_bootstrap.html'
+  '/programa.html'
 ];
 
 console.log('Service Worker cargado correctamente');
@@ -32,25 +31,25 @@ self.addEventListener('install', (event) => {
   );
 });
 
-
-// Activación del Service Worker
+// Activación del Service Worker y limpieza de cachés antiguas
 self.addEventListener('activate', (event) => {
   console.log('Activando Service Worker...');
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Eliminando caché antigua: ', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-    .catch((error) => {
-      console.error('Error durante la activación del Service Worker: ', error);
-    })
+    (async () => {
+      try {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Eliminando caché antigua: ', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      } catch (error) {
+        console.error('Error durante la activación del Service Worker: ', error);
+      }
+    })()
   );
 });
 
@@ -69,6 +68,8 @@ self.addEventListener('fetch', (event) => {
       })
       .catch((error) => {
         console.error('Error durante la solicitud de red: ', error);
+        // Si la red falla, intenta mostrar la página offline
+        return caches.match('/offline.html');
       })
   );
 });
