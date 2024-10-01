@@ -15,77 +15,116 @@ const firebaseConfig = {
 
 // Espera a que el DOM esté completamente cargado antes de ejecutar el código
 document.addEventListener("DOMContentLoaded", function() {
-
-    // Inicializa Firebase
     const app = initializeApp(firebaseConfig);
-
-    // Inicializa Firestore
     const db = getFirestore(app);
 
-    // Referencia al contenedor del acordeón
-    const programaAccordion = document.getElementById('programaAccordion');
+    const eventosPorFecha = document.getElementById('eventosPorFecha'); // Contenedor de escritorio
+    const programaAccordion = document.getElementById('programaAccordion'); // Contenedor de móvil
 
-    // Función para mostrar el programa académico en formato de acordeón
     async function mostrarPrograma() {
         const q = query(collection(db, 'programa'), orderBy('fecha_inicio', 'asc'));
         const querySnapshot = await getDocs(q);
 
-        // Limpia el contenedor del acordeón
-        programaAccordion.innerHTML = '';
+        eventosPorFecha.innerHTML = ''; // Limpiar el contenedor de escritorio
+        programaAccordion.innerHTML = ''; // Limpiar el contenedor de móvil
 
-        let currentDay = '';
-        let accordionContent = '';
-        let panelCounter = 0;
+        // Objeto para agrupar los eventos por fecha
+        let eventosAgrupadosPorFecha = {};
 
+        // Recorre los documentos y agrupa los eventos por fecha
         querySnapshot.forEach((doc) => {
             const eventData = doc.data();
             const fechaInicio = new Date(eventData.fecha_inicio.seconds * 1000);
-            const fechaFin = new Date(eventData.fecha_fin.seconds * 1000);
-            const ponente = eventData.ponente;
-            const titulo = eventData.titulo;
-            const rutaMemorias = eventData.url || '#';
-
+            const fechaFormateada = fechaInicio.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             const horaInicio = fechaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const fechaFin = new Date(eventData.fecha_fin.seconds * 1000);
             const horaFin = fechaFin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const fechaDia = fechaInicio.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-            // Si es un día diferente, cierra el acordeón anterior y empieza uno nuevo
-            if (currentDay !== fechaDia) {
-                if (currentDay !== '') {
-                    accordionContent += `</div></div></div>`;
-                }
+            const evento = {
+                hora: `${horaInicio} - ${horaFin}`,
+                titulo: eventData.titulo,
+                ponente: eventData.ponente,
+                rutaMemorias: eventData.ruta_memorias || '#'
+            };
 
-                accordionContent += `
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading${panelCounter}">
-                            <button class="accordion-button ${panelCounter === 0 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${panelCounter}" aria-expanded="${panelCounter === 0 ? 'true' : 'false'}" aria-controls="collapse${panelCounter}">
-                                ${fechaDia}
-                            </button>
-                        </h2>
-                        <div id="collapse${panelCounter}" class="accordion-collapse collapse ${panelCounter === 0 ? 'show' : ''}" aria-labelledby="heading${panelCounter}" data-bs-parent="#programaAccordion">
-                            <div class="accordion-body">
-                `;
-                currentDay = fechaDia;
-                panelCounter++;
+            // Agrupar los eventos por fecha
+            if (!eventosAgrupadosPorFecha[fechaFormateada]) {
+                eventosAgrupadosPorFecha[fechaFormateada] = [];
             }
-
-            // Añade la charla al contenido del acordeón con el nuevo formato
-            accordionContent += `
-                <div class="mb-3">
-                    <br />${horaInicio} - ${horaFin}
-                    <br /><strong>${titulo}</strong> <a href="${rutaMemorias}" target="_blank">(Memorias)</a></p>
-                    <p>Instructor: ${ponente}</p>
-                </div>
-            `;
+            eventosAgrupadosPorFecha[fechaFormateada].push(evento);
         });
 
-        // Cierra el último acordeón
-        accordionContent += `</div></div></div>`;
+        // Generar contenido para escritorio y móvil
+        let panelCounter = 0;
 
-        // Inserta el contenido generado en el contenedor del acordeón
-        programaAccordion.innerHTML = accordionContent;
+        for (const fecha in eventosAgrupadosPorFecha) {
+            // 1. Generar tablas para la vista de escritorio
+            let tablaEventos = `
+            <div class="mb-5">
+                <h3 class="titulo-fecha">${fecha}</h3>
+                <table class="table table-bordered table-hover tabla-eventos"> <!-- Añadimos la clase aquí -->
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Hora</th>
+                            <th scope="col">Título</th>
+                            <th scope="col">Instructor</th>
+                            <th scope="col">Memorias</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+            eventosAgrupadosPorFecha[fecha].forEach(evento => {
+                tablaEventos += `
+                    <tr>
+                        <td>${evento.hora}</td>
+                        <td>${evento.titulo}</td>
+                        <td>${evento.ponente}</td>
+                        <td><a href="${evento.rutaMemorias}" target="_blank">Ver Memorias</a></td>
+                    </tr>
+                `;
+            });
+
+            tablaEventos += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            eventosPorFecha.innerHTML += tablaEventos;
+
+            // 2. Generar acordeón para la vista móvil
+            let acordeonEventos = `
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading${panelCounter}">
+                        <button class="accordion-button ${panelCounter === 0 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${panelCounter}" aria-expanded="${panelCounter === 0 ? 'true' : 'false'}" aria-controls="collapse${panelCounter}">
+                            ${fecha}
+                        </button>
+                    </h2>
+                    <div id="collapse${panelCounter}" class="accordion-collapse collapse ${panelCounter === 0 ? 'show' : ''}" aria-labelledby="heading${panelCounter}" data-bs-parent="#programaAccordion">
+                        <div class="accordion-body">
+            `;
+
+            eventosAgrupadosPorFecha[fecha].forEach(evento => {
+                acordeonEventos += `
+                    <p><strong>${evento.hora}</strong></p>
+                    <p><strong>${evento.titulo}</strong></p>
+                    <p>Instructor: ${evento.ponente}</p>
+                    <p><a href="${evento.rutaMemorias}" target="_blank">Ver Memorias</a></p>
+                `;
+            });
+
+            acordeonEventos += `
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            programaAccordion.innerHTML += acordeonEventos;
+
+            panelCounter++;
+        }
     }
 
-    // Mostrar el programa al cargar la página
     mostrarPrograma();
 });
