@@ -20,6 +20,12 @@
     <!-- Meta theme-color para PWA -->
     <meta name="theme-color" content="#3f51b5">
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
+
+
     <style>
     .event-card {
         background-color: #e0f7fa; 
@@ -35,48 +41,101 @@
         justify-content: center;
         gap: 20px;
     }
+    .formulario{
+        margin-top:-160px;
+    }
+    .hidden {
+    display: none !important;
+}
     </style>
 </head>
+
 <body>
-    <!-- Contenedor para el navbar -->
-    <div id="navbar-container"></div>
 
     <!-- Header Section -->
-    <header class="py-5">
+    <header id="login-form-header" class="py-5">
         <div class="container">
             <div class="p-4 p-lg-5 bg-light rounded-3 text-center">
                 <h2 class="display-7 fw-bold">XVIII Curso Internacional de Oftalmología Foscal</h2>
                 <p class="fs-6">Febrero 17 al 28 de 2025</p>
-                <!-- <a class="btn btn-primary btn-lg" href="#!">Get Started</a> -->
             </div>
         </div>
     </header>
 
-     <!-- Page Content -->
-    <section class="pt-0" style="margin-top: -60px;">
-        <div class="container-sm px-4">
-            <div class="row d-flex justify-content-center">
+    <!-- Contenido principal que se ocultará si no está autenticado -->
+    <div id="main-content" style="display: none;">
 
-                <!-- Contenedor para las tarjetas de Bootstrap -->
-                <div id="cardContainer" class="row">
-                    <!-- Las tarjetas de eventos son inyectadas aquí desde index.js-->
+        <!-- Contenedor para el navbar -->
+        <div id="navbar-container"></div>
+
+        <!-- Page Content -->
+        <section class="pt-0" style="margin-top: -40px;">
+            <div class="container-sm px-4">
+                <div class="row d-flex justify-content-center">
+
+                    <!-- Contenedor para las tarjetas de Bootstrap -->
+                    <div id="cardContainer" class="row">
+                        <!-- Las tarjetas de eventos son inyectadas aquí desde index.js-->
+                    </div>
+
                 </div>
+            </div>
+        </section>
 
-              
+        <button id="logout">Cerrar sesion</button>
 
+        <!-- Contenedor para el footer -->
+        <div id="footer-container"></div>
+    </div>
+    
+    <!-- Formulario de Login -->
+    <div id="login-form" class="container d-flex justify-content-center align-items-center formulario" style="min-height: 100vh;">
+        <div class="card shadow-sm" style="width: 100%; max-width: 400px;">
+            <div class="card-body">
+                <h4 class="text-center mb-4">Iniciar Sesión</h4>
+                <form id="login">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Correo Electrónico</label>
+                        <input type="email" id="email" class="form-control" placeholder="Ingresa tu correo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" id="password" class="form-control" placeholder="Ingresa tu contraseña" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                </form>
+                <p id="error-message" class="text-danger mt-3"></p>
             </div>
         </div>
-    </section>
-
-    <!-- Contenedor para el footer -->
-    <div id="footer-container"></div>
+    </div>
 
     <!-- Cargar archivos JavaScript -->
     <script src="assets/js/loadComponent.js">
     </script>
 
     <script>
-        loadComponent("navbar-container", "navbar.html");
+        loadComponent("navbar-container", "navbar.html", function() {
+            // Seleccionar el botón de "Cerrar sesión" en el navbar
+            const logoutNavbarButton = document.getElementById("logout-navbar");
+
+            if (logoutNavbarButton) {
+                // Agregar el evento click para cerrar sesión
+                logoutNavbarButton.addEventListener("click", (e) => {
+                    e.preventDefault();  // Evitar la acción predeterminada del enlace
+
+                    signOut(auth).then(() => {
+                        console.log('Sesión cerrada desde el navbar');
+                        // Redirigir al usuario a la página de inicio o mostrar el formulario de login
+                        window.location.href = "index.html";
+                    }).catch((error) => {
+                        console.error("Error al cerrar sesión: ", error);
+                    });
+                });
+            }
+        });
+    </script>
+
+    <script>
         loadComponent("footer-container", "footer.html");
     </script>
 
@@ -85,6 +144,9 @@
 
     <!-- Script de lógica de la app -->
     <script type="module" src="assets/js/index.js"></script> 
+
+    <!-- Enlace a login.js -->
+    <script type="module" src="assets/js/login.js"></script>
 
     <!-- Registro del service worker para PWA -->
     <script>
@@ -106,5 +168,7 @@
         });
         }
     </script>
+
+
 </body>
 </html>
